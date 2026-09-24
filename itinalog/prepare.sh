@@ -35,7 +35,7 @@ python3 "$WORK/itinalog/apply_branding.py" "$WORK"
 echo "== Коммит в ветку ${BRANCH}"
 cd "$WORK"
 git init -q -b "$BRANCH"
-git add -A
+git add -A -f  # -f: .gitignore RustDesk иначе выкидывает часть отслеживаемых файлов (иконки, ассеты)
 git -c user.name="${GIT_AUTHOR_NAME:-itinalog-build}" \
     -c user.email="${GIT_AUTHOR_EMAIL:-build@itinalog.ru}" \
     commit -q -m "АйТиНалоги Remote на базе RustDesk ${UPSTREAM_REF}"
