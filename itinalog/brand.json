@@ -1,0 +1,40 @@
+{
+  "_comment": "Настройки сборки АйТиНалоги Remote. После правки запустите itinalog/prepare.sh или workflow «ITINalog 1. Prepare».",
+
+  "display_name": "АйТиНалоги Remote",
+  "display_name_ascii": "ITINalog Remote",
+  "company": "АйТиНалоги",
+  "site": "https://itinalog.ru",
+  "phone": "8 (4812) 40-09-43",
+
+  "_colors": "Сняты с itinalog.ru: кнопки #E31E24, наведение/акцент #C4191F, текст #222222. Можно \"auto\" — цвет из значка.",
+  "primary": "E31E24",
+  "primary_dark": "C4191F",
+
+  "_style": "Шрифт и скругление кнопок как на сайте (Golos Text, кнопки 20px). font_family пустой — оставить шрифт RustDesk.",
+  "font_family": "Golos Text",
+  "button_radius": 18,
+
+  "_icons": "Если положить свои файлы в itinalog/assets/icon.png (квадрат, от 512x512) и itinalog/assets/logo.png (горизонтальный, прозрачный фон) — будут использованы они. Иначе скачиваются по ссылкам ниже.",
+  "icon_url": "https://itinalog.ru/wp-content/uploads/2023/11/cropped-red_on_white-270x270.png",
+  "logo_url": "https://itinalog.ru/wp-content/plugins/itinalog-landing/assets/images/logo.svg",
+  "logo_fallback_url": "https://itinalog.ru/wp-content/uploads/2023/11/SiteLogoNew-1-198x156.png",
+
+  "_server": "Взято из InstallRustDesk.bat (строка rustdesk_cfg).",
+  "id_server": "1c.itinalog.ru",
+  "relay_server": "1c.itinalog.ru",
+  "api_server": "https://1c.itinalog.ru",
+  "key": "YChcGzvkSzb1icH21u74L0omdMwApVBDYdIcaArx4ow=",
+
+  "_build": "Какие сборки отключить в upstream flutter-build.yml (экономия минут Actions).",
+  "disable_jobs": [
+    "build-for-windows-sciter",
+    "build-rustdesk-ios",
+    "build-rustdesk-linux-sciter",
+    "build-rustdesk-linux-drm",
+    "build-flatpak",
+    "build-rustdesk-web",
+    "generate-sbom"
+  ],
+  "disable_update_check": true
+}
