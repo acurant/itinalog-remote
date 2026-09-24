@@ -461,6 +461,14 @@ def main():
             lines.insert(i + 1, "    if: ${{ false }} # ITINALOG")
             log(f"  отключён job {job}")
         t = "\n".join(lines)
+        # ITINALOG: ad-hoc подпись macOS-приложения (иначе на Apple Silicon оно молча не запускается)
+        if "Ad-hoc codesign (ITINALOG)" not in t:
+            t = t.replace(
+                "      - name: create unsigned dmg\n",
+                "      - name: Ad-hoc codesign (ITINALOG)\n"
+                "        run: codesign --force --deep --sign - ./flutter/build/macos/Build/Products/Release/RustDesk.app\n\n"
+                "      - name: create unsigned dmg\n", 1)
+            log("  macOS: добавлена ad-hoc подпись приложения")
         write(fb, t)
     log(f"Готово. Цвет #{primary} / #{primary_dark}")
 
