@@ -1,0 +1,69 @@
+name: "ITINalog 1. Prepare (брендирование)"
+
+# Скачивает RustDesk, накладывает брендирование АйТиНалоги и кладёт результат
+# в ветку build-<версия>, затем (по желанию) запускает «ITINalog 2. Build».
+#
+# Нужен секрет PUSH_TOKEN: Personal Access Token с правами
+#   Contents: Read and write + Workflows: Read and write (fine-grained)
+#   или repo + workflow (classic).
+# Штатный GITHUB_TOKEN не может отправлять файлы .github/workflows.
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: "Версия RustDesk (тег или ветка)"
+        default: "1.4.9"
+        required: true
+      build:
+        description: "Сразу запустить сборку"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow / cairosvg
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y libcairo2
+          pip install pillow cairosvg fonttools
+
+      - name: Prepare sources
+        env:
+          WORK: ${{ runner.temp }}/rustdesk
+        run: bash itinalog/prepare.sh "${{ inputs.upstream_ref }}"
+
+      - name: Push build branch
+        env:
+          WORK: ${{ runner.temp }}/rustdesk
+          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+        run: |
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "::error::Добавьте секрет PUSH_TOKEN (Settings → Secrets and variables → Actions)"
+            exit 1
+          fi
+          cd "$WORK"
+          git push -f "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}.git" \
+            "HEAD:refs/heads/build-${{ inputs.upstream_ref }}"
+
+      - name: Start build
+        if: ${{ inputs.build }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 5
+          gh workflow run itinalog-build.yml --repo "${{ github.repository }}" \
+            --ref "build-${{ inputs.upstream_ref }}" \
+            -f tag="itinalog-${{ inputs.upstream_ref }}"
+          echo "Сборка запущена: https://github.com/${{ github.repository }}/actions/workflows/itinalog-build.yml"
