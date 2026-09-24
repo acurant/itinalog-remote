@@ -1,0 +1,26 @@
+name: "ITINalog 2. Build (Windows / macOS / Linux / Android)"
+
+# Запускать на ветке build-<версия>, которую создаёт «ITINalog 1. Prepare».
+# Использует штатный конвейер RustDesk (flutter-build.yml); лишние сборки
+# (sciter, iOS, flatpak, web) отключены скриптом брендирования.
+# Готовые файлы появятся в Releases под тегом из поля tag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Тег релиза для готовых файлов"
+        default: "itinalog-nightly"
+        required: true
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/flutter-build.yml
+    secrets: inherit
+    with:
+      upload-artifact: true
+      upload-tag: ${{ inputs.tag }}
